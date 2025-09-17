@@ -46,7 +46,7 @@ def convert_dnsmasq(url: str) -> str:
                 if domain:
                     domain_suffix_list.append(domain.group(1))
     result = {
-        "version": 1,
+        "version": 2,
         "rules": [
             {
                 "domain_suffix": []
@@ -69,7 +69,7 @@ def convert_chnroutes2(url: str) -> str:
             if not line.startswith("#"):
                 ip_cidr_list.append(line)
     result = {
-        "version": 1,
+        "version": 2,
         "rules": [
             {
                 "ip_cidr": []
