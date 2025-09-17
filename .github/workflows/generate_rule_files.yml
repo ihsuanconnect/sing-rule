@@ -1,1 +1,44 @@
 
+name: Generate Rule Files
+
+# 当 push 到 trunk 分支时触发
+on:
+  push:
+    branches: [trunk]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出仓库
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # 设置 Python 环境
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 安装依赖（如果有 requirements.txt）
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # 运行脚本生成 JSON 和 SRS
+      - name: Generate rule files
+        run: python generate_rule_set.py
+
+      # 提交生成的文件到 rule-set 分支
+      - name: Commit and push generated files
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          # 切换或创建 rule-set 分支
+          git checkout -B rule-set
+          git add *.json *.srs
+          git diff-index --quiet HEAD || git commit -m "Auto-generate rule files"
+          git push origin rule-set --force
